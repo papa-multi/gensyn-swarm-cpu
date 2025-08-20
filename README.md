@@ -79,7 +79,7 @@ rm -r $ROOT_DIR/modal-login/temp-data/*.json 2> /dev/null || true
 
 *Add a `#` at the beginning of the line to comment it out, so it looks like this:
 
-# rm -r $ROOT_DIR/modal-login/temp-data/*.json 2> /dev/null || true
+ ` #rm -r $ROOT_DIR/modal-login/temp-data/*.json 2> /dev/null || true`
 
 
 
