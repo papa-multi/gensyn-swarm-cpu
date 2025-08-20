@@ -8,14 +8,16 @@
 # 1) Install Dependencies :
 
 ```
- sudo apt update && sudo apt upgrade -y ```
+ sudo apt update && sudo apt upgrade -y
+```
 
 ```
-sudo apt install screen curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev  -y```
+sudo apt install screen curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev  -y
+```
 
 ```
-sudo apt install python3 python3-pip python3-venv python3-dev -y```
-
+sudo apt install python3 python3-pip python3-venv python3-dev -y
+```
 ```
 sudo apt update
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -
@@ -26,11 +28,17 @@ yarn -v
 ```
 
 
-```curl -o- -L https://yarnpkg.com/install.sh | bash```
+```
+curl -o- -L https://yarnpkg.com/install.sh | bash
+```
 
-```export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"```
+```
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+```
 
-```source ~/.bashrc```
+```
+source ~/.bashrc
+```
 
 ---
 
@@ -47,10 +55,14 @@ git clone https://github.com/gensyn-ai/rl-swarm/
 ```
 
 
-```cd rl-swarm```
+```
+cd rl-swarm
+```
 
 
-```nano run_rl_swarm.sh```
+```
+nano run_rl_swarm.sh
+```
 
 
 
@@ -145,7 +157,9 @@ After the installation is complete and your information appears, press `Ctrl + C
 ## 6) creat file:
 
 
-```nano rl-node.sh```
+```
+nano rl-node.sh
+```
 
 use this :
 
@@ -195,10 +209,14 @@ done
 
 ## 7)run aiagn:
 
-```chmod +x rl-node.sh```
+```
+chmod +x rl-node.sh
+```
 
 
-```tmux new -s rl-node```
+```
+tmux new -s rl-node
+```
 
 
 
