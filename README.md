@@ -42,15 +42,12 @@ source ~/.bashrc
 
 ---
 
-## 2) Get HuggingFace Access token :
-**1- Create account in [HuggingFace](https://huggingface.co/)**
 
-**2- Create an Access Token with `Write` permissions [here](https://huggingface.co/settings/tokens) and save it**
 
 ---
 
-## 3) Clone the Repository :
-```bash
+## 2) Clone the Repository :
+```
 git clone https://github.com/gensyn-ai/rl-swarm/
 ```
 
@@ -84,7 +81,7 @@ rm -r $ROOT_DIR/modal-login/temp-data/*.json 2> /dev/null || true
 
 
 
-## 4) Run the swarm :
+## 3) Run the swarm :
 
 
 ### CLI Method 
@@ -104,14 +101,34 @@ source .venv/bin/activate
 # if not worked, then:
 . .venv/bin/activate
 
+```
+
+
+Note: Before running `swarm`, make sure to run these commands on the CPU to prevent certain errors
+
+
+```
+sed -i -E 's/(num_train_samples:\s*)2/\1 1/' rgym_exp/config/rg-swarm.yaml
+```
+```
+pip install --force-reinstall transformers==4.51.3 trl==0.19.1
+
+pip freeze
+```
+
+
+```
 ./run_rl_swarm.sh
 ```
+
+
 
 
 ## 5) Login :
 **1- You have to receive `Waiting for userData.json to be created...` in logs**
 
-![image](https://github.com/user-attachments/assets/140f7d32-844f-4cf0-aac4-a91e9a14c1aa)
+Note: Open a new terminal
+
 
 **2- Open login page in browser**
 * **Local PC:** Open `http://localhost:3000/` in your browser
@@ -132,21 +149,7 @@ source .venv/bin/activate
     ```
   * Visit the prompted url, and enter your password to access Gensyn login page
 
-**3- Login with your preferred method**
 
-![image](https://github.com/user-attachments/assets/f33ea530-b15f-4af7-a317-93acd8618a9f)
-
-* After login, your terminal starts installation.
-
-**4- Answer prompts:**
-* `Would you like to push models you train in the RL swarm to the Hugging Face Hub? [y/N]` >>> Press `N` to join testnet
-  * `HuggingFace` needs `2GB` upload bandwidth for each model you train, you can press `Y`, and enter your access-token.
-* `Enter the name of the model you want to use in huggingface repo/name format, or press [Enter] to use the default model.` >>> For default model, press `Enter`  or choose one of these (More model parameters (B) need more vRAM):
-  * `Gensyn/Qwen2.5-0.5B-Instruct`
-  * `Qwen/Qwen3-0.6B`
-  * `nvidia/AceInstruct-1.5B`
-  * `dnotitia/Smoothie-Qwen3-1.7B`
-  * `Gensyn/Qwen2.5-1.5B-Instruct`
  
 
 
@@ -155,6 +158,13 @@ After the installation is complete and your information appears, press `Ctrl + C
 
 
 ## 6) creat file:
+
+```
+tmux new -s rl-node
+```
+```
+cd rl-swarm
+```
 
 
 ```
@@ -166,44 +176,29 @@ use this :
 ```
 #!/bin/bash
 
-# ----------------- Settings -----------------
-# 1. Place your Hugging Face API key here
-API_KEY="YOUR_API_KEY_GOES_HERE"
-
-# 2. The full path to the rl-swarm directory
 RL_SWARM_DIR="/root/rl-swarm"
-
-# 3. Log file name
 LOG_FILE="${RL_SWARM_DIR}/gensyn_node.log"
-# -------------------------------------------
+SESSION_NAME="gensyn"
 
-# Infinite loop to manage the screen session
+# Create the screen session if it doesn't exist
+if ! screen -list | grep -q "${SESSION_NAME}"; then
+    screen -dmS $SESSION_NAME
+fi
+
 while true; do
     echo "=================================================="
-    echo "$(date): Creating new screen session 'gensyn'..."
-    echo "Displaying output in screen and logging to: ${LOG_FILE}"
+    echo "$(date): Restarting RL Swarm inside screen session '${SESSION_NAME}'..."
+    echo "Logging to: ${LOG_FILE}"
     echo "=================================================="
 
-    # *** THIS IS THE ONLY LINE THAT HAS CHANGED ***
-    # The output of the script is now piped to 'tee'
-    # 'tee -a' appends the output to the log file AND prints it to standard output (the screen).
-    CMD_TO_RUN="cd ${RL_SWARM_DIR} && source .venv/bin/activate && { echo 'y'; echo '${API_KEY}'; echo ''; } | ./run_rl_swarm.sh 2>&1 | tee -a ${LOG_FILE}"
+    # Run the command inside the existing screen session
+    screen -S $SESSION_NAME -X stuff "cd ${RL_SWARM_DIR} && source .venv/bin/activate && printf '\n\n' | ./run_rl_swarm.sh 2>&1 | tee -a ${LOG_FILE}\n"
 
-    # Create a detached screen session and run the command.
-    screen -dmS gensyn bash -c "${CMD_TO_RUN}"
-
-    echo "Node is running inside 'screen -S gensyn'. Waiting for 3 hours."
-    
     # Wait for 3 hours
     sleep 10800
 
-    echo "=================================================="
-    echo "$(date): Time is up. Terminating the screen session..."
-    echo "=================================================="
-    
-    # Terminate the screen session.
-    screen -XS gensyn quit
-    sleep 5
+    # Send Ctrl+C to stop the running process
+    screen -S $SESSION_NAME -X stuff $'\003'
 done
 ```
 
@@ -213,14 +208,113 @@ done
 chmod +x rl-node.sh
 ```
 
+```
+./rl-node.sh
+```
+
+
+After that, to exit tmux, press `Ctrl + b`, then `d`
+
 
 ```
-tmux new -s rl-node
+screen -ls
+ ```
+
+see gensyn screen if you need check 
+
+```
+screen -r <id>
 ```
 
 
 
-## 8) check with this:
+-----
+
+## Since your RAM might be limited, we add a swap space on the SSD to prevent programs from crashing too quickly.
+
+
+
+# How to Add a 100GB Swap on Linux ✅
+
+Adding swap in Linux is straightforward. To create a **100GB swap file** on your Ubuntu server, follow these steps:
+
+---
+
+### 1️⃣ Create the Swap File
+
+```bash
+fallocate -l 100G /swapfile
+```
+
+> If `fallocate` doesn’t work (some VPS providers restrict it), use:
+
+```bash
+dd if=/dev/zero of=/swapfile bs=1G count=100
+```
+
+---
+
+### 2️⃣ Set Correct Permissions (Security)
+
+```bash
+chmod 600 /swapfile
+```
+
+---
+
+### 3️⃣ Make the File a Swap
+
+```bash
+mkswap /swapfile
+```
+
+---
+
+### 4️⃣ Enable Swap
+
+```bash
+swapon /swapfile
+```
+
+---
+
+### 5️⃣ Verify Swap
+
+```bash
+swapon --show
+free -h
+```
+
+You should see **100GB** added to your swap ✅.
+
+---
+
+### 6️⃣ Make Swap Permanent (After Reboot)
+
+Edit `/etc/fstab`:
+
+```bash
+nano /etc/fstab
+```
+
+Add this line at the end:
+
+```
+/swapfile none swap sw 0 0
+```
+
+---
+
+### ⚠️ Important Notes
+
+* **100GB swap is huge!** Only do this if you have very little RAM or are running heavy workloads like ML/AI or simulations.
+* Swap is **much slower than RAM** (even faster on SSDs, it’s still a turtle 🐢).
+* If you just want **temporary swap**, step 4 is enough—no need to edit `/etc/fstab`.
+
+---
+
+
+
 
 
 
