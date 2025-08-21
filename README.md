@@ -124,7 +124,7 @@ pip freeze
 
 
 
-## 5) Login :
+## 4) Login :
 **1- You have to receive `Waiting for userData.json to be created...` in logs**
 
 Note: Open a new terminal
@@ -157,7 +157,7 @@ Note: Open a new terminal
 After the installation is complete and your information appears, press `Ctrl + C`
 
 
-## 6) creat file:
+## 5) creat file:
 
 ```
 tmux new -s rl-node
@@ -202,7 +202,7 @@ while true; do
 done
 ```
 
-## 7)run aiagn:
+## 6)run aiagn:
 
 ```
 chmod +x rl-node.sh
