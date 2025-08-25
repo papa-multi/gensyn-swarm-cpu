@@ -57,28 +57,6 @@ cd rl-swarm
 ```
 
 
-```
-nano run_rl_swarm.sh
-```
-
-
-
-*We need the login information to be saved so that if the system crashes, the data won’t be lost.
-To do this, open the file and comment out the line that deletes the login data.
-
-*Open the file in your editor.
-
-*Press `Ctrl + W` to search.
-
-*Look for the following line: 
-
-rm -r $ROOT_DIR/modal-login/temp-data/*.json 2> /dev/null || true
-
-*Add a `#` at the beginning of the line to comment it out, so it looks like this:
-
- ` #rm -r $ROOT_DIR/modal-login/temp-data/*.json 2> /dev/null || true`
-
-
 
 
 ## 3) Run the swarm :
@@ -105,6 +83,14 @@ source .venv/bin/activate
 
 
 Note: Before running `swarm`, make sure to run these commands on the CPU to prevent certain errors
+
+```
+nano /root/rl-swarm/rgym_exp/config/rg-swarm.yaml
+```
+ctrl +w  find ` num_train_samples` change to 1  and find `startup_timeout` change to 180  ctrl + x + y  enter
+
+
+
 
 
 ```
@@ -151,80 +137,9 @@ Note: Open a new terminal
 
 
  
+ ## Important note: 
+  if after 3 or 4 hours you don't get any TX on `https://gensyn-testnet.explorer.alchemy.com` please `rm -rf rl-swarm` and rerun
 
-
-
-After the installation is complete and your information appears, press `Ctrl + C`
-
-
-## 5) creat file:
-
-```
-tmux new -s rl-node
-```
-```
-cd rl-swarm
-```
-
-
-```
-nano rl-node.sh
-```
-
-use this :
-
-```
-#!/bin/bash
-
-RL_SWARM_DIR="/root/rl-swarm"
-LOG_FILE="${RL_SWARM_DIR}/gensyn_node.log"
-SESSION_NAME="gensyn"
-
-# Create the screen session if it doesn't exist
-if ! screen -list | grep -q "${SESSION_NAME}"; then
-    screen -dmS $SESSION_NAME
-fi
-
-while true; do
-    echo "=================================================="
-    echo "$(date): Restarting RL Swarm inside screen session '${SESSION_NAME}'..."
-    echo "Logging to: ${LOG_FILE}"
-    echo "=================================================="
-
-    # Run the command inside the existing screen session
-    screen -S $SESSION_NAME -X stuff "cd ${RL_SWARM_DIR} && source .venv/bin/activate && printf '\n\n' | ./run_rl_swarm.sh 2>&1 | tee -a ${LOG_FILE}\n"
-
-    # Wait for 3 hours
-    sleep 10800
-
-    # Send Ctrl+C to stop the running process
-    screen -S $SESSION_NAME -X stuff $'\003'
-done
-```
-
-## 6)run aiagn:
-
-```
-chmod +x rl-node.sh
-```
-
-```
-./rl-node.sh
-```
-
-
-After that, to exit tmux, press `Ctrl + b`, then `d`
-
-
-```
-screen -ls
- ```
-
-see gensyn screen if you need check 
-
-```
-screen -r <id>
-```
 
 
 
