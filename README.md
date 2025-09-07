@@ -90,23 +90,17 @@ nano /root/rl-swarm/rgym_exp/config/rg-swarm.yaml
 ctrl +w  find ` num_train_samples` change to 1  and find `startup_timeout` change to 180  ctrl + x + y  enter
 
 
-
-
+frist install docker [docker](https://github.com/0xmoei/Linux_Node_Guide/blob/main/linux-config.md#docker-docker-compose)
 
 ```
-sed -i -E 's/(num_train_samples:\s*)2/\1 1/' rgym_exp/config/rg-swarm.yaml
-```
-```
-pip install --force-reinstall transformers==4.51.3 trl==0.19.1
-
-pip freeze
+docker compose run --rm --build -Pit swarm-cpu
 ```
 
 
-```
-./run_rl_swarm.sh
-```
+just use this model:
 
+Gensyn/Qwen2.5-0.5B-Instruct
+Qwen/Qwen3-0.6B
 
 
 
